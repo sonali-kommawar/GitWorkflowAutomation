@@ -24,3 +24,6 @@ jobs:
 
       - name: Run Tests
         run: pytest
+      
+      - name: Deploy Application
+  	run: echo "Application deployed successfully!"
