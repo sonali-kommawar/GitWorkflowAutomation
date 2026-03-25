@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Git Workflow Automation</title>
+</head>
+<body>
+
+<h2>Team Task Dashboard</h2>
+
+<form action="/add" method="POST">
+    <input type="text" name="task" placeholder="Enter Task">
+    <button type="submit">Add</button>
+</form>
+
+<ul>
+    {% for task in tasks %}
+        <li>{{ task }}</li>
+    {% endfor %}
+</ul>
+
+</body>
+</html>
