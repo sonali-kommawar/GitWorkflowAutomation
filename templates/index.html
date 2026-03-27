@@ -5,13 +5,13 @@
 
     <style>
         body{
-            font-family: Arial;
+            font-family: Arial, Helvetica, sans-serif;
             background:#f4f6f8;
             text-align:center;
         }
 
         .container{
-            width:60%;
+            width:70%;
             margin:auto;
             background:white;
             padding:20px;
@@ -19,9 +19,14 @@
             box-shadow:0 0 10px gray;
         }
 
+        h2{
+            color:#333;
+        }
+
         input{
             padding:10px;
-            width:60%;
+            margin:5px;
+            width:30%;
         }
 
         button{
@@ -30,16 +35,49 @@
             color:white;
             border:none;
             cursor:pointer;
+            border-radius:5px;
+        }
+
+        button:hover{
+            background:#218838;
+        }
+
+        ul{
+            list-style:none;
+            padding:0;
         }
 
         li{
             text-align:left;
-            margin:8px;
+            margin:10px 0;
+            padding:10px;
+            border-radius:6px;
+            background:#f1f1f1;
         }
 
         .status{
-            color:green;
             font-weight:bold;
+            color:green;
+        }
+
+        .update-btn{
+            text-decoration:none;
+            padding:5px 10px;
+            background:#007bff;
+            color:white;
+            border-radius:5px;
+            margin-left:10px;
+        }
+
+        .update-btn:hover{
+            background:#0056b3;
+        }
+
+        .automation{
+            margin-top:20px;
+            background:#eef7ff;
+            padding:15px;
+            border-radius:8px;
         }
     </style>
 </head>
@@ -48,34 +86,51 @@
 
 <div class="container">
 
-<h2>🚀 Team Task Dashboard</h2>
-<p>Git Workflow Automation for Teams</p>
+    <h2>🚀 Team Task Dashboard</h2>
+    <p><b>Git Workflow Automation for Teams</b></p>
 
-<form action="/add" method="POST">
-    <input type="text" name="task" placeholder="Enter Team Task">
-    <button type="submit">Add</button>
-</form>
+    <!-- ADD TASK FORM -->
+    <form action="/add" method="POST">
+        <input type="text" name="task" placeholder="Enter Team Task" required>
+        <input type="text" name="member" placeholder="Assign To (Developer)" required>
+        <button type="submit">Add Task</button>
+    </form>
 
-<hr>
+    <hr>
 
-<h3>Team Tasks</h3>
+    <!-- TASK LIST -->
+    <h3>📋 Team Tasks</h3>
 
-<ul>
-    {% for task in tasks %}
+    <ul>
+        {% for task in tasks %}
         <li>
-            {{ task }}
-            <span class="status">✔ Synced with Git</span>
+            <b>{{ task.name }}</b><br>
+
+            👤 Assigned To: {{ task.member }} <br>
+
+            📌 Status:
+            <span class="status">{{ task.status }}</span>
+
+            <a class="update-btn" href="/update/{{ loop.index0 }}">
+                🔄 Update Status
+            </a>
         </li>
-    {% endfor %}
-</ul>
+        {% else %}
+        <p>No tasks added yet.</p>
+        {% endfor %}
+    </ul>
 
-<hr>
+    <hr>
 
-<h3>Automation Status</h3>
+    <!-- DEVOPS AUTOMATION STATUS -->
+    <div class="automation">
+        <h3>⚙ Automation Status</h3>
 
-<p>✅ Git Pull : Latest Code Updated</p>
-<p>✅ Git Push : Changes Uploaded</p>
-<p>✅ CI Pipeline : Running Automatically</p>
+        <p>✅ Git Pull : Latest Code Synced</p>
+        <p>✅ Git Push : Changes Uploaded</p>
+        <p>✅ CI Pipeline : Running Automatically</p>
+        <p>✅ Team Workflow : Active</p>
+    </div>
 
 </div>
 
