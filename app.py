@@ -35,7 +35,7 @@ def add_task():
     title = request.form["title"]
     assigned = request.form["assigned"]
 
-    new_task = Task(title, assigned)
+    new_task = Task(title=title, assigned_to=assigned, status="Todo")
 
     db.session.add(new_task)
     db.session.commit()
