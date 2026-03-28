@@ -1,32 +1,57 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Team Task Dashboard</title>
+<title>DevOps Team Dashboard</title>
+
+<!-- Bootstrap -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
 <style>
+
 body{
-    font-family:Arial;
-    background:#f4f6f8;
+    background: linear-gradient(135deg,#8dc3d4,#bcabcd);
+    font-family: Arial;
+    color:white;
+}
+
+/* Header */
+.header{
     text-align:center;
-}
-
-.container{
-    width:70%;
-    margin:auto;
-    background:white;
     padding:20px;
+}
+
+/* Glass card effect */
+.card-style{
+    background: rgba(255,255,255,0.15);
+    backdrop-filter: blur(10px);
+    border-radius:15px;
+    padding:15px;
+    box-shadow:0 5px 15px rgba(0,0,0,0.2);
+}
+
+/* Columns */
+.column{
+    min-height:350px;
+}
+
+/* Task card */
+.task{
+    background:white;
+    color:black;
+    padding:10px;
+    margin:10px 0;
     border-radius:10px;
-    box-shadow:0px 0px 10px gray;
 }
 
-button{
-    padding:6px 10px;
-    margin:3px;
+.btn-sm{
+    margin-top:5px;
 }
 
-.todo{color:red;}
-.doing{color:orange;}
-.done{color:green;}
+.footer{
+    text-align:center;
+    margin-top:20px;
+}
+
 </style>
 </head>
 
@@ -34,64 +59,150 @@ button{
 
 <div class="container">
 
-<h2>🚀 Team Task Dashboard</h2>
+<!-- HEADER -->
+<div class="header">
+    <h1>🚀 Git Workflow Automation Dashboard</h1>
+    <h5>Team Collaboration & DevOps Automation</h5>
+    <p id="clock"></p>
+</div>
 
-<form action="/add_task" method="POST">
-    <input name="title" placeholder="Task Name" required>
-    <input name="assigned" placeholder="Assign To" required>
-    <button>Add Task</button>
+<!-- ADD TASK -->
+<div class="card-style mb-4">
+<form action="/add_task" method="POST" class="row g-2">
+
+<div class="col-md-5">
+<input name="title" class="form-control" placeholder="Enter Task" required>
+</div>
+
+<div class="col-md-4">
+<input name="assigned" class="form-control" placeholder="Assign Member" required>
+</div>
+
+<div class="col-md-3">
+<button class="btn btn-success w-100">➕ Add Task</button>
+</div>
+
 </form>
+</div>
 
-<hr>
+<!-- COUNTERS -->
+<div class="row text-center mb-4">
 
-<h3>Team Tasks</h3>
+<div class="col">
+<div class="card-style">
+<h4>{{tasks|length}}</h4>
+<p>Total Tasks</p>
+</div>
+</div>
 
-<table border="1" width="100%">
-<tr>
-<th>ID</th>
-<th>Task</th>
-<th>Assigned</th>
-<th>Status</th>
-<th>Actions</th>
-</tr>
+<div class="col">
+<div class="card-style">
+<h4>{{tasks|selectattr("status","equalto","Done")|list|length}}</h4>
+<p>Completed</p>
+</div>
+</div>
 
-{% for task in tasks %}
-<tr>
-<td>{{task.id}}</td>
-<td>{{task.title}}</td>
-<td>{{task.assigned_to}}</td>
-
-<td class="
-{% if task.status=='Todo' %}todo
-{% elif task.status=='Doing' %}doing
-{% else %}done
-{% endif %}
-">
-{{task.status}}
-</td>
-
-<td>
-<a href="/update/{{task.id}}">
-<button>Update</button>
-</a>
-
-<a href="/delete/{{task.id}}">
-<button>Delete</button>
-</a>
-</td>
-</tr>
-{% endfor %}
-
-</table>
-
-<hr>
-
-<h3>⚙ DevOps Automation Status</h3>
-<p>✅ Git Pull Synced</p>
-<p>✅ Git Push Enabled</p>
-<p>✅ CI Pipeline Automated</p>
+<div class="col">
+<div class="card-style">
+<h4>{{tasks|selectattr("status","equalto","Doing")|list|length}}</h4>
+<p>In Progress</p>
+</div>
+</div>
 
 </div>
+
+<!-- TASK BOARD -->
+<div class="row">
+
+<!-- TODO -->
+<div class="col-md-4">
+<div class="card-style column">
+<h4 class="text-center">🟥 Todo</h4>
+
+{% for task in tasks if task.status=="Todo" %}
+<div class="task">
+<b>{{task.title}}</b><br>
+Assigned: {{task.assigned_to}}<br>
+
+<a href="/update/{{task.id}}" class="btn btn-warning btn-sm">Start</a>
+<a href="/delete/{{task.id}}" class="btn btn-danger btn-sm">Delete</a>
+</div>
+{% endfor %}
+
+</div>
+</div>
+
+<!-- DOING -->
+<div class="col-md-4">
+<div class="card-style column">
+<h4 class="text-center">🟧 Doing</h4>
+
+{% for task in tasks if task.status=="Doing" %}
+<div class="task">
+<b>{{task.title}}</b><br>
+Assigned: {{task.assigned_to}}<br>
+
+<a href="/update/{{task.id}}" class="btn btn-primary btn-sm">Complete</a>
+<a href="/delete/{{task.id}}" class="btn btn-danger btn-sm">Delete</a>
+</div>
+{% endfor %}
+
+</div>
+</div>
+
+<!-- DONE -->
+<div class="col-md-4">
+<div class="card-style column">
+<h4 class="text-center">🟩 Done</h4>
+
+{% for task in tasks if task.status=="Done" %}
+<div class="task">
+<b>{{task.title}}</b><br>
+Assigned: {{task.assigned_to}}<br>
+
+<span class="badge bg-success">Merged ✅</span>
+<a href="/delete/{{task.id}}" class="btn btn-danger btn-sm">Delete</a>
+</div>
+{% endfor %}
+
+</div>
+</div>
+
+</div>
+
+<!-- DEVOPS PANEL -->
+<div class="card-style mt-4 text-center">
+
+<h3>⚙ DevOps Automation Status</h3>
+
+<div class="progress mb-3">
+<div class="progress-bar bg-success progress-bar-striped progress-bar-animated"
+style="width:100%">
+CI/CD Pipeline Running
+</div>
+</div>
+
+<p>✅ Git Pull Synced</p>
+<p>✅ Git Push Automated</p>
+<p>✅ GitHub Actions Enabled</p>
+<p>✅ Continuous Integration Active</p>
+
+</div>
+
+<div class="footer">
+<h6>Developed for DevOps Project Demonstration</h6>
+</div>
+
+</div>
+
+<!-- CLOCK SCRIPT -->
+<script>
+function updateClock(){
+    document.getElementById("clock").innerHTML =
+        new Date().toLocaleString();
+}
+setInterval(updateClock,1000);
+</script>
 
 </body>
 </html>
