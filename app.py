@@ -1,38 +1,71 @@
 from flask import Flask, render_template, request, redirect, url_for
+from database import db, Task
 
 app = Flask(__name__)
 
-# Store tasks as dictionary objects
-tasks = []
+# Database configuration
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///team.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-@app.route("/")
-def home():
-    return render_template("index.html", tasks=tasks)
+db.init_app(app)
 
-# ADD TASK
-@app.route("/add", methods=["POST"])
+# Create DB
+with app.app_context():
+    db.create_all()
+
+
+# ---------------- LOGIN ----------------
+@app.route("/", methods=["GET", "POST"])
+def login():
+    if request.method == "POST":
+        return redirect(url_for("dashboard"))
+    return render_template("login.html")
+
+
+# ---------------- DASHBOARD ----------------
+@app.route("/dashboard")
+def dashboard():
+    tasks = Task.query.all()
+    return render_template("dashboard.html", tasks=tasks)
+
+
+# ---------------- ADD TASK ----------------
+@app.route("/add_task", methods=["POST"])
 def add_task():
-    task_name = request.form.get("task")
-    member = request.form.get("member")
+    title = request.form["title"]
+    assigned = request.form["assigned"]
 
-    if task_name:
-        tasks.append({
-            "name": task_name,
-            "member": member,
-            "status": "Todo"
-        })
+    new_task = Task(title=title, assigned_to=assigned, status="Todo")
 
-    return redirect(url_for("home"))
+    db.session.add(new_task)
+    db.session.commit()
 
-# UPDATE STATUS
-@app.route("/update/<int:index>")
-def update_status(index):
-    if tasks[index]["status"] == "Todo":
-        tasks[index]["status"] = "Doing"
-    elif tasks[index]["status"] == "Doing":
-        tasks[index]["status"] = "Done"
+    return redirect(url_for("dashboard"))
 
-    return redirect(url_for("home"))
+
+# ---------------- UPDATE STATUS ----------------
+@app.route("/update/<int:id>")
+def update(id):
+    task = Task.query.get(id)
+
+    if task.status == "Todo":
+        task.status = "Doing"
+    elif task.status == "Doing":
+        task.status = "Done"
+
+    db.session.commit()
+    return redirect(url_for("dashboard"))
+
+
+# ---------------- DELETE TASK ----------------
+@app.route("/delete/<int:id>")
+def delete(id):
+    task = Task.query.get(id)
+    db.session.delete(task)
+    db.session.commit()
+
+    return redirect(url_for("dashboard"))
+
 
 if __name__ == "__main__":
     app.run(debug=True)
