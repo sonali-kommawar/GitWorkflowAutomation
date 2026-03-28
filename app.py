@@ -36,3 +36,20 @@ def update_status(index):
 
 if __name__ == "__main__":
     app.run(debug=True)
+
+@app.route("/bugs")
+def bugs():
+    bugs = Bug.query.all()
+    return render_template("bugs.html", bugs=bugs)
+
+
+@app.route("/report_bug", methods=["POST"])
+def report_bug():
+    bug = Bug(
+        title=request.form["title"],
+        developer=request.form["developer"],
+        status="Open"
+    )
+    db.session.add(bug)
+    db.session.commit()
+    return redirect("/bugs")

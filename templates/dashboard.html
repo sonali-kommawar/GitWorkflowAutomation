@@ -1,0 +1,21 @@
+<h2>Project Management Dashboard</h2>
+
+<form action="/add_task" method="POST">
+    <input name="title" placeholder="Task">
+    <input name="assigned" placeholder="Assign To">
+    <button>Add Task</button>
+</form>
+
+<hr>
+
+{% for task in tasks %}
+<div>
+    <b>{{task.title}}</b>
+    | Assigned: {{task.assigned_to}}
+    | Status: {{task.status}}
+
+    <a href="/update/{{task.id}}">
+        Update Status
+    </a>
+</div>
+{% endfor %}
